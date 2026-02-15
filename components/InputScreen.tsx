@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import LoadingScreen from "./LoadingScreen";
 import OutputScreen from "./OutputScreen";
 import HexButton from "./UI/HexButton";
@@ -10,6 +10,11 @@ export default function InputScreen() {
   const [prompt, setPrompt] = useState("");
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [inputTab, setInputTab] = useState<"upload" | "notes">("upload");
+  const [files, setFiles] = useState<File[]>([]);
+  const [result, setResult] = useState<any | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const toggleTool = (tool: string) => {
     setSelectedTools((prev) =>
@@ -17,15 +22,82 @@ export default function InputScreen() {
     );
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    if (!prompt.trim() && files.length === 0) {
+      // Nothing to process; stay on input step
+      return;
+    }
+
     setStep("loading");
-    setTimeout(() => setStep("output"), 1000);
+
+    try {
+      const formData = new FormData();
+      formData.append("notes", prompt);
+      files.forEach((file) => formData.append("files", file));
+
+      const response = await fetch("/api/ingest", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      setResult(data);
+      setStep("output");
+    } catch (error) {
+      setResult({ status: "error", message: "Failed to process input." });
+      setStep("output");
+    }
   };
 
-  const handleReset = () => setStep("input");
+  const handleReset = () => {
+    setStep("input");
+    setResult(null);
+  };
+
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFilesSelected = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selected = event.target.files ? Array.from(event.target.files) : [];
+    if (selected.length === 0) return;
+    setFiles((prev) => [...prev, ...selected]);
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const dropped = event.dataTransfer.files
+      ? Array.from(event.dataTransfer.files)
+      : [];
+    if (dropped.length === 0) return;
+    setFiles((prev) => [...prev, ...dropped]);
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const related = event.relatedTarget as Node | null;
+    if (related && event.currentTarget.contains(related)) return;
+    setIsDragging(false);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   if (step === "loading") return <LoadingScreen />;
-  if (step === "output") return <OutputScreen onReset={handleReset} />;
+  if (step === "output") return <OutputScreen onReset={handleReset} data={result} />;
 
   return (
     <section className="flex flex-1 items-start justify-center pt-6 px-4">
@@ -74,15 +146,112 @@ export default function InputScreen() {
               </div>
 
               {inputTab === "upload" ? (
-                <div className="w-full h-full rounded-xl bg-[#f6f4ef] border-2 border-dashed border-[#d3d1cb] flex flex-col items-center justify-center gap-2 text-[#6b6658] text-sm">
-                  <span className="font-semibold">Upload Files</span>
-                  <span className="text-xs text-[#9b978b]">PDF, slides, or documents</span>
-                  <button
-                    type="button"
-                    className="mt-2 rounded-full border border-[#e0b74f] px-4 py-1 text-xs font-semibold text-[#3a362b] bg-white hover:bg-[#fff7e5] transition-colors"
-                  >
-                    Browse files
-                  </button>
+                <div
+                  className="relative w-full h-full flex flex-col gap-3 text-[#3a362b] text-sm"
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                >
+                  {isDragging && (
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#f4b544] bg-[#fff7e5]/90 text-xs text-[#6b6658] z-10">
+                      <p className="font-semibold text-[#3a362b]">Drop files here</p>
+                      <p>PDF, DOCX, PPTX, or TXT</p>
+                    </div>
+                  )}
+                  {files.length === 0 ? (
+                    <div className="flex-1 rounded-xl border-2 border-dashed border-[#d3d1cb] bg-[#f6f4ef] flex flex-col items-center justify-center gap-2 px-4 py-6 text-[#6b6658]">
+                      <p className="font-semibold">Upload your study files</p>
+                      <p className="text-xs text-[#9b978b] text-center">
+                        Drag and drop PDF, DOCX, PPTX, or TXT here, or click
+                        below to browse
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleBrowseClick}
+                        className="mt-1 rounded-full border border-[#e0b74f] px-4 py-1 text-xs font-semibold text-[#3a362b] bg-white hover:bg-[#fff7e5] transition-colors"
+                      >
+                        Browse files
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex-1 w-full space-y-2">
+                        {files.map((file, index) => {
+                          const ext = file.name.split(".").pop()?.toLowerCase() || "";
+                          const typeLabel =
+                            ext === "pdf"
+                              ? "PDF"
+                              : ext === "doc" || ext === "docx"
+                              ? "DOCX"
+                              : ext === "ppt" || ext === "pptx"
+                              ? "PPTX"
+                              : ext.toUpperCase();
+
+                          const badgeClass =
+                            ext === "pdf"
+                              ? "bg-[#fef3f2] text-[#b42318]"
+                              : ext === "doc" || ext === "docx"
+                              ? "bg-[#eff4ff] text-[#1d4ed8]"
+                              : ext === "ppt" || ext === "pptx"
+                              ? "bg-[#fff4ed] text-[#c05621]"
+                              : "bg-[#f3f4f6] text-[#374151]";
+
+                          const sizeInMB = file.size / (1024 * 1024);
+                          const sizeLabel =
+                            sizeInMB < 1
+                              ? `${(file.size / 1024).toFixed(0)} KB`
+                              : `${sizeInMB.toFixed(1)} MB`;
+
+                          return (
+                            <div
+                              key={`${file.name}-${index}`}
+                              className="flex items-center justify-between rounded-xl bg-white shadow-sm px-3 py-2"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div
+                                  className={`flex h-8 w-10 items-center justify-center rounded-md text-[10px] font-semibold ${badgeClass}`}
+                                >
+                                  {typeLabel || "FILE"}
+                                </div>
+                                <span className="truncate text-xs" title={file.name}>
+                                  {file.name}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3 shrink-0">
+                                <span className="text-[10px] text-[#9b978b]">
+                                  {sizeLabel}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveFile(index)}
+                                  className="text-[11px] text-[#b91c1c] hover:text-[#7f1d1d]"
+                                  aria-label="Remove file"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleBrowseClick}
+                        className="self-center mt-1 rounded-full border border-[#e0b74f] px-4 py-1 text-xs font-semibold text-[#3a362b] bg-white hover:bg-[#fff7e5] transition-colors"
+                      >
+                        Add More Files
+                      </button>
+                    </>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept=".pdf,.ppt,.pptx,.doc,.docx,.txt,image/*"
+                    className="hidden"
+                    onChange={handleFilesSelected}
+                  />
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col">
