@@ -72,7 +72,7 @@ function buildStudyPrompt(combinedText: string, tools: StudyTool[]): string {
 
       Output Structure:
 
-      1. Executive Overview (3 to 5 sentences)
+      1. Overview (3 to 5 sentences)
         - Core idea of the entire text.
 
       2. Core Concepts
@@ -90,14 +90,14 @@ function buildStudyPrompt(combinedText: string, tools: StudyTool[]): string {
     sections.push(
       `For the **Quiz** section:
       - Start with the markdown heading "### Quiz".
-      Task: Create a rigorous quiz based only on the provided content.
+      Objective: Create a rigorous quiz based only on the provided content.
 
       Structure:
       Section A: Conceptual Understanding
       - 5 multiple-choice questions
       - 4 options each
       - Only 1 correct answer
-      - Include explanation for the correct answer
+      - After listing the options for each question, add a line starting with "Answer:" that gives the correct option letter, followed by a short explanation on the same line or the next line.
 
       Section B: Short Answer
       - 4 questions requiring 2 to 4 sentence answers
@@ -110,9 +110,6 @@ function buildStudyPrompt(combinedText: string, tools: StudyTool[]): string {
       - 30% Easy
       - 40% Moderate
       - 30% Challenging
-
-      At the end:
-      Provide an answer key with explanations.
 `
     );
   }
@@ -145,8 +142,7 @@ function buildStudyPrompt(combinedText: string, tools: StudyTool[]): string {
     sections.push(
       `For the **Flashcards** section:
       - Start with the markdown heading "### Flashcards".
-      Task:
-      Create high-retention flashcards using active recall principles.
+      Task: Create high-retention flashcards using active recall principles.
 
       Rules:
       - One concept per card.
@@ -163,38 +159,42 @@ function buildStudyPrompt(combinedText: string, tools: StudyTool[]): string {
       Section 4: Cause & Effect Relationships
       Section 5: Application Scenarios
 
-      Generate at least 20 flashcards.
-
-      After generation:
-      - Identify 5 cards that are most exam-critical.
-      - Suggest 3 cards that could be converted into cloze deletion format (Anki-style).`
+      Generate at least 20 flashcards.`
     );
   }
 
   if (activeTools.includes("Key Points")) {
     sections.push(
       `For the **Key Points** section:
+
       - Start with the markdown heading "### Key Points".
-      Task: Extract only the most critical knowledge units from the text.
+      - Immediately after the heading, output a single JSON object for the Key Points section (do not wrap it in markdown code fences) with this exact shape:
 
-      Requirements:
-      - Limit to 12 to 18 key points.
-      - Each point must contain a complete idea.
-      - Prioritize:
-        • Definitions
-        • Mechanisms
-        • Cause-and-effect relationships
-        • Comparisons
-        • Processes
-        • Formulas
-      - Remove examples unless essential.
-      - Remove filler.
-      - No repetition.
-      - Rank from most important (1) to least important.
+      {
+        "type": "keypoints",
+        "title": "<lesson title>",
+        "data": [
+          {
+            "rank": 1,
+            "title": "<short conceptual label, 2-6 words>",
+            "explanation": "<clear, complete explanation of the concept>"
+          }
+        ],
+        "insights": [
+          "<cross-connection insight 1>",
+          "<cross-connection insight 2>",
+          "<cross-connection insight 3>"
+        ]
+      }
 
-      After listing key points, include:
-      - 3 insights that connect multiple points together.
-`
+      RULES:
+      - Limit to 12 to 18 items in "data".
+      - Each explanation should be 2 to 4 sentences, concise but complete.
+      - Titles must NOT be generic like "Key Point 1"; they should summarize the specific concept.
+      - Use only information present in the study material; do not invent unsupported facts.
+      - Avoid repetition and filler.
+      - Rank concepts from most foundational (1) to most advanced.
+      - This JSON object applies only to the Key Points section; you MUST still generate all other selected sections (Summarize, Quiz, Structured Outline, Flashcards) as normal markdown above or below it.`
     );
   }
 
