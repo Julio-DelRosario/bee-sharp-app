@@ -9,8 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+  "groq-sdk": "^0.7.0",
     "mammoth": "^1.6.0",
-    "next": "16.1.6",
+    "next": "^16.1.6",
     "pdf-parse": "^1.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
@@ -21,8 +22,9 @@
     "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint": "^10.0.1",
+    "eslint-config-next": "^16.1.6",
+    "minimatch": "^10.2.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

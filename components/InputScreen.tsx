@@ -13,13 +13,22 @@ export default function InputScreen() {
   const [files, setFiles] = useState<File[]>([]);
   const [result, setResult] = useState<any | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const toggleTool = (tool: string) => {
-    setSelectedTools((prev) =>
-      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
-    );
+    setSelectedTools((prev) => {
+      if (prev.includes(tool)) {
+        return prev.filter((t) => t !== tool);
+      }
+
+      if (prev.length >= 3) {
+        return prev;
+      }
+
+      return [...prev, tool];
+    });
   };
 
   const handleGenerate = async () => {
@@ -33,6 +42,9 @@ export default function InputScreen() {
     try {
       const formData = new FormData();
       formData.append("notes", prompt);
+      // Send the selected study tools to the API so it can
+      // tailor the Groq prompt and outputs.
+      formData.append("tools", JSON.stringify(selectedTools));
       files.forEach((file) => formData.append("files", file));
 
       const response = await fetch("/api/ingest", {
@@ -63,7 +75,34 @@ export default function InputScreen() {
   ) => {
     const selected = event.target.files ? Array.from(event.target.files) : [];
     if (selected.length === 0) return;
-    setFiles((prev) => [...prev, ...selected]);
+    setFiles((prev) => {
+      const MAX_FILES = 3;
+      const MAX_TOTAL_BYTES = 4 * 1024 * 1024; // 4 MB
+
+      let next: File[] = [...prev];
+      for (const file of selected) {
+        if (next.length >= MAX_FILES) {
+          setFileError("You can upload a maximum of 3 files.");
+          break;
+        }
+
+        const totalBytes = next.reduce((sum, f) => sum + f.size, 0) + file.size;
+        if (totalBytes > MAX_TOTAL_BYTES) {
+          setFileError(
+            "Combined file size is too large. Please keep uploads under 4 MB."
+          );
+          break;
+        }
+
+        next.push(file);
+      }
+
+      if (next.length === prev.length && !fileError) {
+        setFileError("No files were added. Check the limits.");
+      }
+
+      return next;
+    });
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -72,7 +111,34 @@ export default function InputScreen() {
       ? Array.from(event.dataTransfer.files)
       : [];
     if (dropped.length === 0) return;
-    setFiles((prev) => [...prev, ...dropped]);
+    setFiles((prev) => {
+      const MAX_FILES = 3;
+      const MAX_TOTAL_BYTES = 4 * 1024 * 1024; // 4 MB
+
+      let next: File[] = [...prev];
+      for (const file of dropped) {
+        if (next.length >= MAX_FILES) {
+          setFileError("You can upload a maximum of 3 files.");
+          break;
+        }
+
+        const totalBytes = next.reduce((sum, f) => sum + f.size, 0) + file.size;
+        if (totalBytes > MAX_TOTAL_BYTES) {
+          setFileError(
+            "Combined file size is too large. Please keep uploads under 4 MB."
+          );
+          break;
+        }
+
+        next.push(file);
+      }
+
+      if (next.length === prev.length && !fileError) {
+        setFileError("No files were added. Check the limits.");
+      }
+
+      return next;
+    });
     setIsDragging(false);
   };
 
@@ -94,13 +160,14 @@ export default function InputScreen() {
 
   const handleRemoveFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+    setFileError(null);
   };
 
   if (step === "loading") return <LoadingScreen />;
   if (step === "output") return <OutputScreen onReset={handleReset} data={result} />;
 
   return (
-    <section className="flex flex-1 items-start justify-center pt-6 px-4">
+    <section className="flex flex-1 items-start justify-center pt-10 px-4">
       <div className="w-full max-w-5xl flex flex-col gap-6">
         <div className="mx-auto max-w-xl pb-4 text-center">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -173,6 +240,9 @@ export default function InputScreen() {
                       >
                         Browse files
                       </button>
+                      <p className="mt-2 text-[11px] text-[#9b978b]">
+                        Up to 3 files, combined maximum of 4 MB.
+                      </p>
                     </div>
                   ) : (
                     <>
@@ -235,6 +305,23 @@ export default function InputScreen() {
                           );
                         })}
                       </div>
+                      <div className="flex items-center justify-between text-[11px] text-[#6b6658] mt-1">
+                        <span>
+                          {files.length}/3 files
+                        </span>
+                        <span>
+                          {(
+                            files.reduce((sum, f) => sum + f.size, 0) /
+                            (1024 * 1024)
+                          ).toFixed(2)}{" "}
+                          MB / 4.00 MB
+                        </span>
+                      </div>
+                      {fileError && (
+                        <p className="mt-1 text-[11px] text-[#b91c1c]">
+                          {fileError}
+                        </p>
+                      )}
                       <button
                         type="button"
                         onClick={handleBrowseClick}
@@ -350,7 +437,7 @@ export default function InputScreen() {
             <button
               type="button"
               onClick={handleGenerate}
-              className="h-12 w-full rounded-full bg-[#f4b544] text-sm font-semibold text-[#3a362b] shadow-md hover:bg-[#f1ae35] transition-colors"
+              className="h-12 w-full rounded-xl bg-[#f4b544] text-sm font-semibold text-[#3a362b] shadow-md hover:bg-[#f1ae35] transition-colors"
             >
               Generate
             </button>
