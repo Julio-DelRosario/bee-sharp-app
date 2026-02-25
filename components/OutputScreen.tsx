@@ -74,6 +74,64 @@ function parseSections(markdown: string | undefined | null): ParsedSections {
   return result;
 }
 
+type SourceBlock = {
+  sourceId: string;
+  sourceLabel: string;
+  body: string;
+};
+
+function parseBySource(rawSection: string | undefined | null): SourceBlock[] {
+  if (!rawSection) return [];
+
+  const lines = rawSection.split(/\r?\n/);
+  const blocks: SourceBlock[] = [];
+
+  const headingRegex = /^#{3,6}\s+\[SOURCE\s+(\d+):\s*(.+?)\]\s*$/i;
+
+  let currentId = "source-1";
+  let currentLabel = "All sources";
+  let buffer: string[] = [];
+  let seenAnyHeading = false;
+
+  for (const line of lines) {
+    const match = line.match(headingRegex);
+    if (match) {
+      // Flush previous block
+      if (buffer.length > 0) {
+        blocks.push({
+          sourceId: currentId,
+          sourceLabel: currentLabel,
+          body: buffer.join("\n").trim(),
+        });
+        buffer = [];
+      }
+
+      const index = match[1].trim();
+      const label = match[2].trim();
+      currentId = `source-${index}`;
+      currentLabel = label || `Source ${index}`;
+      seenAnyHeading = true;
+    } else {
+      buffer.push(line);
+    }
+  }
+
+  if (buffer.length > 0) {
+    blocks.push({
+      sourceId: currentId,
+      sourceLabel: currentLabel,
+      body: buffer.join("\n").trim(),
+    });
+  }
+
+  if (!seenAnyHeading && blocks.length === 1) {
+    // Single unsegmented block
+    blocks[0].sourceLabel = "All sources";
+  }
+
+  return blocks.filter((b) => b.body.length > 0);
+}
+
 type ToolKey = "summarize" | "outline" | "keypoints" | "quiz" | "flashcards";
 
 const TOOL_CONFIGS: { key: ToolKey; label: string }[] = [
@@ -175,23 +233,49 @@ export default function OutputScreen({
         {hasAnySection && (
           <div className="flex flex-col gap-6">
             {activeTool === "summarize" && sections.summarize && (
-              <BaseToolLayout title="Summarize" body={sections.summarize} />
+              parseBySource(sections.summarize).map((block) => (
+                <BaseToolLayout
+                  key={`summarize-${block.sourceId}`}
+                  title={
+                    block.sourceLabel === "All sources"
+                      ? "Summarize"
+                      : `Summarize 9 ${block.sourceLabel}`
+                  }
+                  body={block.body}
+                />
+              ))
             )}
 
             {activeTool === "outline" && sections.outline && (
-              <OutlineLayout rawSection={sections.outline} />
+              parseBySource(sections.outline).map((block) => (
+                <OutlineLayout
+                  key={`outline-${block.sourceId}`}
+                  rawSection={block.body}
+                />
+              ))
             )}
 
             {activeTool === "keypoints" && sections.keypoints && (
+              // Key Points remain aggregated across all sources for now.
               <KeyPointsLayout rawSection={sections.keypoints} />
             )}
 
             {activeTool === "quiz" && sections.quiz && (
-              <QuizLayout rawSection={sections.quiz} />
+              parseBySource(sections.quiz).map((block) => (
+                <QuizLayout
+                  key={`quiz-${block.sourceId}`}
+                  rawSection={block.body}
+                />
+              ))
             )}
 
             {activeTool === "flashcards" && sections.flashcards && (
-              <FlashcardLayout rawSection={sections.flashcards} />
+              parseBySource(sections.flashcards).map((block) => (
+                <FlashcardLayout
+                  key={`flashcards-${block.sourceId}`}
+                  rawSection={block.body}
+                />
+              ))
             )}
           </div>
         )}

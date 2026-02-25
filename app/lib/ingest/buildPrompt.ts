@@ -122,10 +122,7 @@ export function buildStudyPrompt(
       - Maintain technical terms.
       - Do NOT summarize excessively — preserve detail.
       - Do NOT add outside knowledge.
-
-      Additionally:
-      At the end, include:
-      - 3 potential exam questions derived from the outline.`
+      - The outline should be comprehensive enough to serve as a study guide for exams.`
     );
   }
 

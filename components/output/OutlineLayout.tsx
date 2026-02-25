@@ -4,6 +4,7 @@ import { getWordCount, getReadingTimeMinutes } from "./BaseToolLayout";
 type OutlineNode = {
   text: string;
   level: number;
+  marker?: string;
   children: OutlineNode[];
 };
 
@@ -23,29 +24,76 @@ function buildOutlineTree(rawSection: string | undefined): OutlineNode[] {
   const roots: OutlineNode[] = [];
   const stack: OutlineNode[] = [];
 
-  const getLevel = (line: string): number => {
-    if (/^[IVXLCDM]+\./i.test(line)) return 0;
-    if (/^[A-Z]\.\s+/.test(line)) return 1;
-    if (/^\d+\.\s+/.test(line)) return 2;
-    if (/^[a-z]\.\s+/.test(line)) return 3;
-    return stack.length > 0 ? stack[stack.length - 1].level : 0;
-  };
+  const parseLine = (line: string): { level: number; marker: string; text: string } => {
+    const romanMatch = line.match(/^((?=[IVXLCDM]*[IVXL])[IVXLCDM]+\.)\s*/i);
+    if (romanMatch) {
+      return {
+        level: 0,
+        marker: romanMatch[1],
+        text: line.replace(/^([IVXLCDM]+\.)\s*/i, "").trim(),
+      };
+    }
 
-  const stripMarker = (line: string): string => {
-    return line
-      .replace(/^[IVXLCDM]+\.\s*/i, "")
-      .replace(/^[A-Z]\.\s+/, "")
-      .replace(/^\d+\.\s+/, "")
-      .replace(/^[a-z]\.\s+/, "")
-      .trim();
+    const upperMatch = line.match(/^([A-Z]\.)\s+/);
+    if (upperMatch) {
+      return {
+        level: 1,
+        marker: upperMatch[1],
+        text: line.replace(/^([A-Z]\.)\s+/, "").trim(),
+      };
+    }
+
+    const numberMatch = line.match(/^(\d+\.)\s+/);
+    if (numberMatch) {
+      return {
+        level: 2,
+        marker: numberMatch[1],
+        text: line.replace(/^(\d+\.)\s+/, "").trim(),
+      };
+    }
+
+    const lowerMatch = line.match(/^([a-z]\.)\s+/);
+    if (lowerMatch) {
+      return {
+        level: 3,
+        marker: lowerMatch[1],
+        text: line.replace(/^([a-z]\.)\s+/, "").trim(),
+      };
+    }
+
+    const currentLevel = stack.length > 0 ? stack[stack.length - 1].level : 0;
+    return {
+      level: currentLevel,
+      marker: "",
+      text: line.trim(),
+    };
   };
 
   for (const line of lines) {
-    const level = getLevel(line);
-    const text = stripMarker(line);
+    const isBullet = /^[-•]\s+/.test(line);
+
+    let level: number;
+    let marker: string;
+    let text: string;
+
+    if (isBullet) {
+      const headingParent = [...stack]
+        .slice()
+        .reverse()
+        .find((n) => n.level <= 1);
+      const parentLevel = headingParent ? headingParent.level : 0;
+      level = parentLevel + 1;
+      marker = "";
+      text = line.replace(/^[-•]\s+/, "").trim();
+    } else {
+      const parsed = parseLine(line);
+      level = parsed.level;
+      marker = parsed.marker;
+      text = parsed.text;
+    }
     if (!text) continue;
 
-    const node: OutlineNode = { text, level, children: [] };
+    const node: OutlineNode = { text, level, marker, children: [] };
 
     while (stack.length > 0 && stack[stack.length - 1].level >= level) {
       stack.pop();
@@ -63,29 +111,29 @@ function buildOutlineTree(rawSection: string | undefined): OutlineNode[] {
   return roots;
 }
 
-function OutlineList({ nodes }: { nodes: OutlineNode[] }) {
+function OutlineList({ nodes, level }: { nodes: OutlineNode[]; level: number }) {
   if (!nodes.length) return null;
 
+  const isBulletLevel = level >= 2;
+  const indentClass =
+    level === 0 ? "" : level === 1 ? "ml-6" : level === 2 ? "ml-8" : "ml-12";
+
   return (
-    <ul className="space-y-1">
+    <ul className={`${isBulletLevel ? "list-disc pl-5" : ""} ${indentClass} space-y-1`}>
       {nodes.map((node, index) => (
         <li key={index} className="text-sm text-[#3a362b]">
-          <div
-            className={
-              node.level === 0
-                ? "font-semibold"
-                : node.level === 1
-                ? "ml-4"
-                : node.level === 2
-                ? "ml-8"
-                : "ml-12"
-            }
-          >
-            {node.text}
+          <div className={node.level <= 1 ? "font-semibold" : ""}>
+            {node.level <= 1 && node.marker && (
+              <span className="mr-2">{node.marker}</span>
+            )}
+            <span>{node.text}</span>
           </div>
           {node.children.length > 0 && (
-            <div className="mt-1 ml-4 border-l border-[#e0ded6] pl-3">
-              <OutlineList nodes={node.children} />
+            <div className="mt-1">
+              <OutlineList
+                nodes={node.children}
+                level={node.children[0]?.level ?? node.level + 1}
+              />
             </div>
           )}
         </li>
@@ -95,6 +143,8 @@ function OutlineList({ nodes }: { nodes: OutlineNode[] }) {
 }
 
 export function OutlineLayout({ rawSection }: OutlineLayoutProps) {
+  console.log("[Structured Outline] rawSection:", rawSection);
+
   const wordCount = getWordCount(rawSection || "");
   const minutes = getReadingTimeMinutes(wordCount);
   const tree = buildOutlineTree(rawSection);
@@ -110,9 +160,9 @@ export function OutlineLayout({ rawSection }: OutlineLayoutProps) {
         </div>
       </div>
       <div className="h-px bg-[#e7e3d7]" />
-      <div className="max-h-80 overflow-y-auto rounded-xl bg-[#fdfbf6] border border-[#e0ded6] px-4 py-3">
+      <div className="rounded-xl bg-[#fdfbf6] border border-[#e0ded6] px-4 py-3">
         {tree.length > 0 ? (
-          <OutlineList nodes={tree} />
+          <OutlineList nodes={tree} level={0} />
         ) : (
           <p className="text-xs text-[#9b978b]">No outline content available.</p>
         )}

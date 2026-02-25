@@ -131,7 +131,7 @@ export function KeyPointsLayout({ rawSection }: KeyPointsLayoutProps) {
                 key={index}
                 className="rounded-xl bg-white border border-[#f3e2c0] px-4 py-3 text-sm text-[#3a362b] shadow-sm"
               >
-                <div className="text-xs font-semibold text-[#b45309] mb-1">
+                <div className="font-semibold text-[#b45309] mb-1">
                   {point.title}
                 </div>
                 <div className="leading-relaxed">{point.explanation}</div>
@@ -143,9 +143,9 @@ export function KeyPointsLayout({ rawSection }: KeyPointsLayoutProps) {
         )}
 
         {insights && (
-          <div className="mt-2 rounded-xl bg-[#fff7e5] border border-[#f3e2c0] px-4 py-3 text-xs text-[#3a362b]">
+          <div className="mt-2 rounded-xl bg-[#fff7e5] border border-[#f3e2c0] px-4 py-3 text-[#3a362b]">
             <p className="font-semibold mb-1 text-[#b45309]">Insights</p>
-            <p className="leading-relaxed">{insights}</p>
+            <p className="leading-relaxed text-sm">{insights}</p>
           </div>
         )}
       </div>
