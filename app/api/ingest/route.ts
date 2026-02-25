@@ -83,7 +83,9 @@ export async function POST(request: Request) {
     }
 
     // Combine all extracted text (notes + files) for the LLM prompt.
-    const combinedText = content.map((item) => item.value).join("\n\n");
+    // Wrap in XML tags to clearly delimit untrusted user content for prompt injection defense.
+    const rawText = content.map((item) => item.value).join("\n\n");
+    const combinedText = `<user_provided_study_material>\n${rawText}\n</user_provided_study_material>`;
 
     let groqResponse: string | null = null;
 

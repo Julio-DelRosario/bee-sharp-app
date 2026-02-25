@@ -2,6 +2,7 @@
 
 import React, { ReactNode, CSSProperties } from "react";
 import ReactMarkdown, { Components } from "react-markdown";
+import rehypeSanitize from "rehype-sanitize";
 
 interface PrintLayoutProps {
   markdownContent: string;
@@ -354,6 +355,7 @@ export function PrintLayout({ markdownContent, title }: PrintLayoutProps) {
                 </td>
               ),
             } as Components}
+            rehypePlugins={[rehypeSanitize]}
           >
             {markdownContent}
           </ReactMarkdown>
