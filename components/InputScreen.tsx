@@ -167,21 +167,21 @@ export default function InputScreen() {
   if (step === "output") return <OutputScreen onReset={handleReset} data={result} />;
 
   return (
-    <section className="flex flex-1 items-start justify-center pt-10 px-4">
-      <div className="w-full max-w-5xl flex flex-col gap-6">
-        <div className="mx-auto max-w-xl pb-4 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+    <section className="flex flex-1 items-start justify-center pt-6 sm:pt-10 px-3 sm:px-4">
+      <div className="w-full max-w-5xl flex flex-col gap-4 sm:gap-6">
+        <div className="mx-auto max-w-xl pb-2 sm:pb-4 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
             Sharpen your mind.
           </h1>
-          <p className="mt-3 text-sm text-slate-600 sm:text-base">
+          <p className="mt-2 sm:mt-3 text-xs text-slate-600 sm:text-sm md:text-base">
             Upload slides, textbook pages, or paste your notes. The bees filter the noise and keep the honey.
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6 items-stretch">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-6 items-stretch">
           {/* Left Panel */}
           <div className="w-full md:w-1/2 flex flex-col">
-            <div className="h-full rounded-2xl bg-[#FEFCF6] py-6 px-8 shadow-sm flex flex-col">
+            <div className="h-full rounded-2xl bg-[#FEFCF6] py-4 sm:py-6 px-4 sm:px-8 shadow-sm flex flex-col">
               <div className="mb-4 text-center">
                 <h2 className="text-lg font-semibold text-[#3a362b]">
                   Add your notes
@@ -375,20 +375,20 @@ export default function InputScreen() {
           </div>
 
           {/* Right Panel */}
-          <div className="w-full md:w-1/2 rounded-2xl bg-[#FEFCF6] py-6 px-8 shadow-sm flex flex-col justify-between gap-6">
-            <div className="flex flex-col gap-6">
+          <div className="w-full md:w-1/2 rounded-2xl bg-[#FEFCF6] py-4 sm:py-6 px-4 sm:px-8 shadow-sm flex flex-col justify-between gap-4 sm:gap-6">
+            <div className="flex flex-col gap-4 sm:gap-6">
               <div className="text-center">
-                <h2 className="text-lg font-semibold text-[#3a362b]">
+                <h2 className="text-base sm:text-lg font-semibold text-[#3a362b]">
                   Study Tool Selection
                 </h2>
-                <p className="mt-1 text-sm text-[#6b6658]">
+                <p className="mt-1 text-xs sm:text-sm text-[#6b6658]">
                   Select the study materials you want to generate.
                 </p>
               </div>
 
               <div className="flex justify-center">
-                {/* Desktop / tablet honeycomb */}
-                <div className="hidden md:flex flex-col items-center gap-2">
+                {/* Honeycomb layout - responsive for all screen sizes */}
+                <div className="flex flex-col items-center gap-2 scale-[1] sm:scale-100 origin-top">
                   {/* Top Row */}
                   <div className="flex justify-center">
                     <HexButton
@@ -396,10 +396,9 @@ export default function InputScreen() {
                       selected={selectedTools.includes("Summarize")}
                       onClick={() => toggleTool("Summarize")}
                       icon={
-                        <svg className="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 5V4a1 1 0 0 0-1-1H8.914a1 1 0 0 0-.707.293L4.293 7.207A1 1 0 0 0 4 7.914V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5M9 3v4a1 1 0 0 1-1 1H4m11.383.772 2.745 2.746m1.215-3.906a2.089 2.089 0 0 1 0 2.953l-6.65 6.646L9 17.95l.739-3.692 6.646-6.646a2.087 2.087 0 0 1 2.958 0Z"/>
+                        <svg className="w-6 h-6 sm:w-8 sm:h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 5V4a1 1 0 0 0-1-1H8.914a1 1 0 0 0-.707.293L4.293 7.207A1 1 0 0 0 4 7.914V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5M9 3v4a1 1 0 0 1-1 1H4m11.383.772 2.745 2.746m1.215-3.906a2.089 2.089 0 0 1 0 2.953l-6.65 6.646L9 17.95l.739-3.692 6.646-6.646a2.087 2.087 0 0 1 2.958 0Z"/>
                         </svg>
-
                       }
                     />
                     <HexButton
@@ -407,8 +406,8 @@ export default function InputScreen() {
                       selected={selectedTools.includes("Structured Outline")}
                       onClick={() => toggleTool("Structured Outline")}
                       icon={
-                        <svg className="w-10 h-10" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>
+                        <svg className="w-7 h-7 sm:w-10 sm:h-10" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>
                         </svg>
                       }
                     />
@@ -417,23 +416,22 @@ export default function InputScreen() {
                       selected={selectedTools.includes("Key Points")}
                       onClick={() => toggleTool("Key Points")}
                       icon={
-                        <svg className="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9a3 3 0 0 1 3-3m-2 15h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 6 9c0 4 4 5 4 9h4Z"/>
+                        <svg className="w-6 h-6 sm:w-8 sm:h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 9a3 3 0 0 1 3-3m-2 15h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 6 9c0 4 4 5 4 9h4Z"/>
                         </svg>
-
                       }
                     />
                   </div>
 
                   {/* Bottom Row */}
-                  <div className="-mt-8 flex justify-center">
+                  <div className="-mt-6 sm:-mt-8 flex justify-center">
                     <HexButton
                       label="Quiz"
                       selected={selectedTools.includes("Quiz")}
                       onClick={() => toggleTool("Quiz")}
                       icon={
-                        <svg className="w-8 h-8"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.5A2.493 2.493 0 0 1 7.51 20H7.5a2.468 2.468 0 0 1-2.4-3.154 2.98 2.98 0 0 1-.85-5.274 2.468 2.468 0 0 1 .92-3.182 2.477 2.477 0 0 1 1.876-3.344 2.5 2.5 0 0 1 3.41-1.856A2.5 2.5 0 0 1 12 5.5m0 13v-13m0 13a2.493 2.493 0 0 0 4.49 1.5h.01a2.468 2.468 0 0 0 2.403-3.154 2.98 2.98 0 0 0 .847-5.274 2.468 2.468 0 0 0-.921-3.182 2.477 2.477 0 0 0-1.875-3.344A2.5 2.5 0 0 0 14.5 3 2.5 2.5 0 0 0 12 5.5m-8 5a2.5 2.5 0 0 1 3.48-2.3m-.28 8.551a3 3 0 0 1-2.953-5.185M20 10.5a2.5 2.5 0 0 0-3.481-2.3m.28 8.551a3 3 0 0 0 2.954-5.185"/>
+                        <svg className="w-6 h-6 sm:w-8 sm:h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18.5A2.493 2.493 0 0 1 7.51 20H7.5a2.468 2.468 0 0 1-2.4-3.154 2.98 2.98 0 0 1-.85-5.274 2.468 2.468 0 0 1 .92-3.182 2.477 2.477 0 0 1 1.876-3.344 2.5 2.5 0 0 1 3.41-1.856A2.5 2.5 0 0 1 12 5.5m0 13v-13m0 13a2.493 2.493 0 0 0 4.49 1.5h.01a2.468 2.468 0 0 0 2.403-3.154 2.98 2.98 0 0 0 .847-5.274 2.468 2.468 0 0 0-.921-3.182 2.477 2.477 0 0 0-1.875-3.344A2.5 2.5 0 0 0 14.5 3 2.5 2.5 0 0 0 12 5.5m-8 5a2.5 2.5 0 0 1 3.48-2.3m-.28 8.551a3 3 0 0 1-2.953-5.185M20 10.5a2.5 2.5 0 0 0-3.481-2.3m.28 8.551a3 3 0 0 0 2.954-5.185"/>
                         </svg>
                       }
                     />
@@ -442,65 +440,9 @@ export default function InputScreen() {
                       selected={selectedTools.includes("Flashcards")}
                       onClick={() => toggleTool("Flashcards")}
                       icon={
-                        <svg className="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                          <path fill-rule="evenodd" d="M8 5a1 1 0 0 1 1-1h11a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-1a1 1 0 1 1 0-2h1V6H9a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-                          <path fill-rule="evenodd" d="M4 7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H4Zm0 11v-5.5h11V18H4Z" clip-rule="evenodd"/>
-                        </svg>
-                      }
-                    />
-                  </div>
-                </div>
-
-                {/* Mobile layout: compact grid that still feels connected */}
-                <div className="grid grid-cols-2 gap-4 place-items-center md:hidden">
-                  <HexButton
-                    label="Reviewer"
-                    selected={selectedTools.includes("Reviewer")}
-                    onClick={() => toggleTool("Reviewer")}
-                    icon={
-                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
-                      </svg>
-                    }
-                  />
-                  <HexButton
-                    label="Quiz"
-                    selected={selectedTools.includes("Quiz")}
-                    onClick={() => toggleTool("Quiz")}
-                    icon={
-                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
-                      </svg>
-                    }
-                  />
-                  <HexButton
-                    label="Flashcards"
-                    selected={selectedTools.includes("Flashcards")}
-                    onClick={() => toggleTool("Flashcards")}
-                    icon={
-                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
-                      </svg>
-                    }
-                  />
-                  <HexButton
-                    label="Key Terms"
-                    selected={selectedTools.includes("Key Terms")}
-                    onClick={() => toggleTool("Key Terms")}
-                    icon={
-                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
-                      </svg>
-                    }
-                  />
-                  <div className="col-span-2 -mt-4 flex justify-center">
-                    <HexButton
-                      label="Simplify"
-                      selected={selectedTools.includes("Simplify")}
-                      onClick={() => toggleTool("Simplify")}
-                      icon={
-                        <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                          <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
+                        <svg className="w-6 h-6 sm:w-8 sm:h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                          <path fillRule="evenodd" d="M8 5a1 1 0 0 1 1-1h11a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-1a1 1 0 1 1 0-2h1V6H9a1 1 0 0 1-1-1Z" clipRule="evenodd"/>
+                          <path fillRule="evenodd" d="M4 7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H4Zm0 11v-5.5h11V18H4Z" clipRule="evenodd"/>
                         </svg>
                       }
                     />
