@@ -6,6 +6,8 @@ import { OutlineLayout } from "./output/OutlineLayout";
 import { KeyPointsLayout } from "./output/KeyPointsLayout";
 import { QuizLayout } from "./output/QuizLayout";
 import { FlashcardLayout } from "./output/FlashcardLayout";
+import { ExportButtons, ExportDropdown } from "@/components/ExportButtons";
+
 
 type OutputData = {
   status: string;
@@ -193,33 +195,43 @@ export default function OutputScreen({
         </div>
 
         {hasAnySection && (
-          <div className="mt-2 flex justify-start">
-            <div className="inline-flex rounded-full bg-[#f4f1e7] p-1 gap-2">
-              {availableTools.map(({ key, label }) => {
-                const isActive = key === activeTool;
-                const baseClasses =
-                  "px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-colors";
-                const activeClasses =
-                  "border border-[#b45309] bg-[#b45309] text-white shadow-sm";
-                const inactiveClasses =
-                  "border border-[#e0ded6] bg-[#fdfbf6] text-[#6b6658] hover:bg-[#f4f1e7]";
+          <div className="mt-2 flex items-center justify-between gap-4">
+            <div className="flex justify-start">
+              <div className="inline-flex rounded-full bg-[#f4f1e7] p-1 gap-2">
+                {availableTools.map(({ key, label }) => {
+                  const isActive = key === activeTool;
+                  const baseClasses =
+                    "px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-colors";
+                  const activeClasses =
+                    "border border-[#b45309] bg-[#b45309] text-white shadow-sm";
+                  const inactiveClasses =
+                    "border border-[#e0ded6] bg-[#fdfbf6] text-[#6b6658] hover:bg-[#f4f1e7]";
 
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setActiveTool(key)}
-                    className={`${baseClasses} ${
-                      isActive ? activeClasses : inactiveClasses
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setActiveTool(key)}
+                      className={`${baseClasses} ${
+                        isActive ? activeClasses : inactiveClasses
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="shrink-0">
+              <ExportDropdown
+                markdownContent={data?.groqResponse ?? ""}
+                title="Study Materials"
+              />
             </div>
           </div>
         )}
+
+        
 
         {!hasAnySection && (
           <div className="rounded-2xl bg-[#FEFCF6] py-6 px-8 shadow-sm text-sm text-[#3a362b]">

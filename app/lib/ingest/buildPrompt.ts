@@ -88,19 +88,37 @@ export function buildStudyPrompt(
       - 5 multiple-choice questions
       - 4 options each
       - Only 1 correct answer
-      - After listing the options for each question, add a line starting with "Answer:" that gives the correct option letter, followed by a short explanation on the same line or the next line.
+      - Do NOT include inline answers after each question.
 
       Section B: Short Answer
       - 4 questions requiring 2 to 4 sentence answers
+      - Do NOT include inline answers.
 
       Section C: Application / Critical Thinking
       - 3 scenario-based questions
       - Require applying concepts from the text
+      - Do NOT include inline answers.
 
       Difficulty Distribution:
       - 30% Easy
       - 40% Moderate
       - 30% Challenging
+
+      CRITICAL: Quizzes MUST place the Answer Key separated at the very bottom under a "### Answer Key" heading. Format the Answer Key as:
+      
+      ### Answer Key
+      **Section A:**
+      1. [Letter] - [Brief explanation]
+      2. [Letter] - [Brief explanation]
+      ...
+      
+      **Section B:**
+      1. [Model answer in 2-4 sentences]
+      ...
+      
+      **Section C:**
+      1. [Model answer]
+      ...
 `
     );
   }
@@ -112,11 +130,12 @@ export function buildStudyPrompt(
       Task: Convert the content into a logically structured, exam-ready outline.
 
       Rules:
-      - Use hierarchical structure:
-        I. Main Topics
-          A. Subtopics
-              1. Supporting Details
-                a. Specific examples or mechanisms
+      - Use hierarchical structure with STRICTLY consistent indentation:
+        I. Main Topics (no indentation)
+            A. Subtopics (4 spaces indentation)
+                1. Supporting Details (8 spaces indentation)
+                    a. Specific examples or mechanisms (12 spaces indentation)
+      - CRITICAL: Structured Outline MUST use strictly 4 spaces for Level 2 (A, B, C), 8 spaces for Level 3 (1, 2, 3), and 12 spaces for Level 4 (a, b, c) indentation. Do NOT use tabs or inconsistent spacing.
       - Group related ideas properly.
       - Remove repetition.
       - Maintain technical terms.
@@ -156,33 +175,26 @@ export function buildStudyPrompt(
       `For the **Key Points** section:
 
       - Start with the markdown heading "### Key Points".
-      - Immediately after the heading, output a single JSON object for the Key Points section (do not wrap it in markdown code fences) with this exact shape:
+      - CRITICAL: Key Points MUST be a standard Markdown bulleted list. NEVER output raw JSON.
+      - Use this exact format:
 
-      {
-        "type": "keypoints",
-        "title": "<lesson title>",
-        "data": [
-          {
-            "rank": 1,
-            "title": "<short conceptual label, 2-6 words>",
-            "explanation": "<clear, complete explanation of the concept>"
-          }
-        ],
-        "insights": [
-          "<cross-connection insight 1>",
-          "<cross-connection insight 2>",
-          "<cross-connection insight 3>"
-        ]
-      }
+      ### Key Points
+
+      **1. [Concept Title]**
+      - [Clear, complete explanation of the concept in 2-4 sentences]
+
+      **2. [Next Concept Title]**
+      - [Explanation]
+
+      ... and so on.
 
       RULES:
-      - Limit to 12 to 18 items in "data".
+      - Include 12 to 18 key points.
       - Each explanation should be 2 to 4 sentences, concise but complete.
       - Titles must NOT be generic like "Key Point 1"; they should summarize the specific concept.
       - Use only information present in the study material; do not invent unsupported facts.
       - Avoid repetition and filler.
-      - Rank concepts from most foundational (1) to most advanced.
-      - This JSON object applies only to the Key Points section; you MUST still generate all other selected sections (Summarize, Quiz, Structured Outline, Flashcards) as normal markdown above or below it.`
+      - Rank concepts from most foundational (1) to most advanced.`
     );
   }
 
