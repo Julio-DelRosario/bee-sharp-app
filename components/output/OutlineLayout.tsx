@@ -123,8 +123,10 @@ function OutlineList({ nodes, level }: { nodes: OutlineNode[]; level: number }) 
       {nodes.map((node, index) => (
         <li key={index} className="text-sm text-[#3a362b]">
           <div className={node.level <= 1 ? "font-semibold" : ""}>
-            {node.level <= 1 && node.marker && (
-              <span className="mr-2">{node.marker}</span>
+            {node.level <= 1 && (
+              <span className="mr-2">
+                {node.level === 1 ? `${index + 1}.` : node.marker}
+              </span>
             )}
             <span>{node.text}</span>
           </div>

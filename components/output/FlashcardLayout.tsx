@@ -65,7 +65,6 @@ export function FlashcardLayout({ rawSection }: FlashcardLayoutProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [shuffle, setShuffle] = useState(false);
   const [cardOrder, setCardOrder] = useState<number[]>([]);
-  const [instantReset, setInstantReset] = useState(false);
 
   useEffect(() => {
     if (cards.length === 0) {
@@ -82,16 +81,6 @@ export function FlashcardLayout({ rawSection }: FlashcardLayoutProps) {
     setCurrentIndex(0);
     setIsFlipped(false);
   }, [cards, shuffle]);
-
-  useEffect(() => {
-    if (!instantReset) return;
-
-    const id = window.requestAnimationFrame(() => {
-      setInstantReset(false);
-    });
-
-    return () => window.cancelAnimationFrame(id);
-  }, [instantReset]);
 
   const total = cardOrder.length;
 
@@ -118,7 +107,6 @@ export function FlashcardLayout({ rawSection }: FlashcardLayoutProps) {
 
   const handleNext = () => {
     if (currentIndex < total - 1) {
-      setInstantReset(true);
       setIsFlipped(false);
       setCurrentIndex((prev) => prev + 1);
     }
@@ -126,7 +114,6 @@ export function FlashcardLayout({ rawSection }: FlashcardLayoutProps) {
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      setInstantReset(true);
       setIsFlipped(false);
       setCurrentIndex((prev) => prev - 1);
     }
@@ -162,8 +149,6 @@ export function FlashcardLayout({ rawSection }: FlashcardLayoutProps) {
           <div
             className={`flashcard-3d-inner ${
               isFlipped ? "is-flipped" : ""
-            } ${
-              instantReset ? "no-transition" : ""
             }`}
           >
             <div className="flashcard-face flashcard-front leading-relaxed">

@@ -35,10 +35,8 @@ body {
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.5s ease;
-}
-
-.flashcard-3d-inner.no-transition {
-  transition: none !important;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .flashcard-3d-inner.is-flipped {
@@ -57,7 +55,7 @@ body {
   text-align: center;
   font-weight: 600;
   box-shadow: 0 12px 18px rgba(0, 0, 0, 0.08);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .flashcard-front {
