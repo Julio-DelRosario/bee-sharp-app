@@ -227,21 +227,39 @@ export default function InputScreen() {
                     </div>
                   )}
                   {files.length === 0 ? (
-                    <div className="flex-1 rounded-xl border-2 border-dashed border-[#d3d1cb] bg-[#f6f4ef] flex flex-col items-center justify-center gap-2 px-4 py-6 text-[#6b6658]">
-                      <p className="font-semibold">Upload your study files</p>
-                      <p className="text-xs text-[#9b978b] text-center">
-                        Drag and drop PDF, DOCX, PPTX, or TXT here, or click
-                        below to browse
-                      </p>
+                    <div
+                      onClick={handleBrowseClick}
+                      className="flex-1 rounded-xl border-2 border-dashed border-[#d3d1cb] bg-[#f6f4ef] flex flex-col items-center justify-center gap-3 px-4 py-8 text-[#6b6658] cursor-pointer hover:border-[#f4b544] hover:bg-[#fdf9f0] transition-colors"
+                    >
+                      {/* Cloud Upload Icon */}
+                      <svg
+                        className="w-12 h-12 text-[#c5c3bb]"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"
+                        />
+                      </svg>
+                      <p className="text-base font-bold text-[#3a362b]">Drag & drop files here</p>
                       <button
                         type="button"
-                        onClick={handleBrowseClick}
-                        className="mt-1 rounded-full border border-[#e0b74f] px-4 py-1 text-xs font-semibold text-[#3a362b] bg-white hover:bg-[#fff7e5] transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBrowseClick();
+                        }}
+                        className="text-sm text-[#e0b74f] hover:text-[#c9a03e] hover:underline transition-colors"
                       >
-                        Browse files
+                        or click to browse
                       </button>
                       <p className="mt-2 text-[11px] text-[#9b978b]">
-                        Up to 3 files, combined maximum of 4 MB.
+                        PDF, DOCX, PPTX, TXT. Max 3 files (4MB total).
                       </p>
                     </div>
                   ) : (
@@ -359,11 +377,15 @@ export default function InputScreen() {
           {/* Right Panel */}
           <div className="w-full md:w-1/2 rounded-2xl bg-[#FEFCF6] py-6 px-8 shadow-sm flex flex-col justify-between gap-6">
             <div className="flex flex-col gap-6">
-              <h2 className="text-lg font-semibold text-[#3a362b] text-center">
-                Study Tool Selection
-              </h2>
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-[#3a362b]">
+                  Study Tool Selection
+                </h2>
+                <p className="mt-1 text-sm text-[#6b6658]">
+                  Select the study materials you want to generate.
+                </p>
+              </div>
 
-              {/* Honeycomb layout */}
               <div className="flex justify-center">
                 {/* Desktop / tablet honeycomb */}
                 <div className="hidden md:flex flex-col items-center gap-2">
@@ -373,16 +395,33 @@ export default function InputScreen() {
                       label="Summarize"
                       selected={selectedTools.includes("Summarize")}
                       onClick={() => toggleTool("Summarize")}
+                      icon={
+                        <svg className="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 5V4a1 1 0 0 0-1-1H8.914a1 1 0 0 0-.707.293L4.293 7.207A1 1 0 0 0 4 7.914V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5M9 3v4a1 1 0 0 1-1 1H4m11.383.772 2.745 2.746m1.215-3.906a2.089 2.089 0 0 1 0 2.953l-6.65 6.646L9 17.95l.739-3.692 6.646-6.646a2.087 2.087 0 0 1 2.958 0Z"/>
+                        </svg>
+
+                      }
                     />
                     <HexButton
                       label="Structured Outline"
                       selected={selectedTools.includes("Structured Outline")}
                       onClick={() => toggleTool("Structured Outline")}
+                      icon={
+                        <svg className="w-10 h-10" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>
+                        </svg>
+                      }
                     />
                     <HexButton
                       label="Key Points"
                       selected={selectedTools.includes("Key Points")}
                       onClick={() => toggleTool("Key Points")}
+                      icon={
+                        <svg className="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9a3 3 0 0 1 3-3m-2 15h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 6 9c0 4 4 5 4 9h4Z"/>
+                        </svg>
+
+                      }
                     />
                   </div>
 
@@ -392,11 +431,22 @@ export default function InputScreen() {
                       label="Quiz"
                       selected={selectedTools.includes("Quiz")}
                       onClick={() => toggleTool("Quiz")}
+                      icon={
+                        <svg className="w-8 h-8"  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.5A2.493 2.493 0 0 1 7.51 20H7.5a2.468 2.468 0 0 1-2.4-3.154 2.98 2.98 0 0 1-.85-5.274 2.468 2.468 0 0 1 .92-3.182 2.477 2.477 0 0 1 1.876-3.344 2.5 2.5 0 0 1 3.41-1.856A2.5 2.5 0 0 1 12 5.5m0 13v-13m0 13a2.493 2.493 0 0 0 4.49 1.5h.01a2.468 2.468 0 0 0 2.403-3.154 2.98 2.98 0 0 0 .847-5.274 2.468 2.468 0 0 0-.921-3.182 2.477 2.477 0 0 0-1.875-3.344A2.5 2.5 0 0 0 14.5 3 2.5 2.5 0 0 0 12 5.5m-8 5a2.5 2.5 0 0 1 3.48-2.3m-.28 8.551a3 3 0 0 1-2.953-5.185M20 10.5a2.5 2.5 0 0 0-3.481-2.3m.28 8.551a3 3 0 0 0 2.954-5.185"/>
+                        </svg>
+                      }
                     />
                     <HexButton
                       label="Flashcards"
                       selected={selectedTools.includes("Flashcards")}
                       onClick={() => toggleTool("Flashcards")}
+                      icon={
+                        <svg className="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                          <path fill-rule="evenodd" d="M8 5a1 1 0 0 1 1-1h11a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-1a1 1 0 1 1 0-2h1V6H9a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
+                          <path fill-rule="evenodd" d="M4 7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H4Zm0 11v-5.5h11V18H4Z" clip-rule="evenodd"/>
+                        </svg>
+                      }
                     />
                   </div>
                 </div>
@@ -407,30 +457,72 @@ export default function InputScreen() {
                     label="Reviewer"
                     selected={selectedTools.includes("Reviewer")}
                     onClick={() => toggleTool("Reviewer")}
+                    icon={
+                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
+                      </svg>
+                    }
                   />
                   <HexButton
                     label="Quiz"
                     selected={selectedTools.includes("Quiz")}
                     onClick={() => toggleTool("Quiz")}
+                    icon={
+                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
+                      </svg>
+                    }
                   />
                   <HexButton
                     label="Flashcards"
                     selected={selectedTools.includes("Flashcards")}
                     onClick={() => toggleTool("Flashcards")}
+                    icon={
+                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
+                      </svg>
+                    }
                   />
                   <HexButton
                     label="Key Terms"
                     selected={selectedTools.includes("Key Terms")}
                     onClick={() => toggleTool("Key Terms")}
+                    icon={
+                      <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
+                      </svg>
+                    }
                   />
                   <div className="col-span-2 -mt-4 flex justify-center">
                     <HexButton
                       label="Simplify"
                       selected={selectedTools.includes("Simplify")}
                       onClick={() => toggleTool("Simplify")}
+                      icon={
+                        <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                          <path fillRule="evenodd" d="M9 2.221V7H4.221a2 2 0 0 1 .365-.5L8.5 2.586A2 2 0 0 1 9 2.22ZM11 2v5a2 2 0 0 1-2 2H4v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7Z" clipRule="evenodd"/>
+                        </svg>
+                      }
                     />
                   </div>
                 </div>
+              </div>
+
+              <div
+                className={`text-xs text-center ${
+                  selectedTools.length >= 3
+                    ? "text-[#b91c1c] font-semibold"
+                    : "text-[#6b6658]"
+                }`}
+              >
+                <span>
+                  {selectedTools.length}/3 tools selected
+                </span>
+                {selectedTools.length < 3 ? (
+                  <span className="ml-1">(you can choose up to 3)</span>
+                ) : (
+                  <span className="ml-1">maximum of 3 tools selected</span>
+                )}
               </div>
             </div>
 

@@ -6,7 +6,7 @@ import { OutlineLayout } from "./output/OutlineLayout";
 import { KeyPointsLayout } from "./output/KeyPointsLayout";
 import { QuizLayout } from "./output/QuizLayout";
 import { FlashcardLayout } from "./output/FlashcardLayout";
-import { ExportButtons, ExportDropdown } from "@/components/ExportButtons";
+import { ExportButtons, ExportDropdown } from "@/components/UI/ExportButtons";
 
 
 type OutputData = {

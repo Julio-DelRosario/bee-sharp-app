@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { exportToWord } from "@/lib/export/exportToWord";
 import { exportToPdf } from "@/lib/export/exportPdfFromHtml";
-import { PrintLayout } from "./PrintLayout";
+import { PrintLayout } from "../PrintLayout";
 
 interface ExportButtonsProps {
   /** The raw Markdown content to export */
