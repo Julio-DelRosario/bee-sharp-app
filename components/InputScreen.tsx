@@ -223,7 +223,7 @@ export default function InputScreen() {
                   {isDragging && (
                     <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#f4b544] bg-[#fff7e5]/90 text-xs text-[#6b6658] z-10">
                       <p className="font-semibold text-[#3a362b]">Drop files here</p>
-                      <p>PDF, DOCX, PPTX, or TXT</p>
+                      <p>PDF, DOCX, PPTX, TXT, or MD</p>
                     </div>
                   )}
                   {files.length === 0 ? (
@@ -259,7 +259,7 @@ export default function InputScreen() {
                         or click to browse
                       </button>
                       <p className="mt-2 text-[11px] text-[#9b978b]">
-                        PDF, DOCX, PPTX, TXT. Max 3 files (4MB total).
+                        PDF, DOCX, PPTX, TXT, MD. Max 3 files (4MB total).
                       </p>
                     </div>
                   ) : (
@@ -353,7 +353,7 @@ export default function InputScreen() {
                     ref={fileInputRef}
                     type="file"
                     multiple
-                    accept=".pdf,.ppt,.pptx,.doc,.docx,.txt,image/*"
+                    accept=".pdf,.ppt,.pptx,.doc,.docx,.txt,.md,image/*"
                     className="hidden"
                     onChange={handleFilesSelected}
                   />

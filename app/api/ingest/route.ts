@@ -70,7 +70,7 @@ export async function POST(request: Request) {
         text = await extractTextFromPdf(buffer);
       } else if (ext === "docx") {
         text = await extractTextFromDocx(buffer);
-      } else if (ext === "txt") {
+      } else if (ext === "txt" || ext === "md") {
         text = await extractTextFromTxt(buffer);
       } else {
         // Unsupported type for this MVP: skip silently

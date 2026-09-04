@@ -25,7 +25,10 @@ function parseFlashcardsSection(rawSection: string | undefined): Flashcard[] {
   if (!rawSection) return [];
   const cards: Flashcard[] = [];
 
-  const normalized = rawSection
+  // Strip bold markers (** or __) to make regex matching highly resilient
+  const cleanSection = rawSection.replace(/\*\*|__/g, "");
+
+  const normalized = cleanSection
     .replace(/\s+/g, " ")
     .replace(/(\d+\.)\s*Q:/g, "\n$1 Q:")
     .trim();
@@ -44,7 +47,7 @@ function parseFlashcardsSection(rawSection: string | undefined): Flashcard[] {
   if (cards.length > 0) return cards;
 
   const multilineRegex = /Q:\s*(.+?)\nA:\s*([\s\S]*?)(?=\nQ:|\nSection|$)/g;
-  while ((match = multilineRegex.exec(rawSection)) !== null) {
+  while ((match = multilineRegex.exec(cleanSection)) !== null) {
     const front = match[1].trim();
     const back = match[2].trim();
     if (front && back) {

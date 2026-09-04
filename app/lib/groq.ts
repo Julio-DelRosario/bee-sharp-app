@@ -8,7 +8,7 @@ if (!apiKey) {
 
 const groq = new Groq({ apiKey });
 
-const MODEL_ID = "llama-3.3-70b-versatile";
+const MODEL_ID = "openai/gpt-oss-120b";
 
 export async function generateStudySummary(prompt: string): Promise<string> {
   const response = await groq.chat.completions.create({
@@ -20,7 +20,7 @@ export async function generateStudySummary(prompt: string): Promise<string> {
       },
     ],
     temperature: 0.5,
-    max_tokens: 4000,
+    max_tokens: 2000,
   });
 
   const choice = response.choices?.[0];
